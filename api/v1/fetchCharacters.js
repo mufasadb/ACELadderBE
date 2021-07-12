@@ -1,6 +1,6 @@
 
 const https = require("https");
-
+const accounts = require("./accounts");
 
 
 
@@ -34,7 +34,7 @@ function getCharactersByUser(username) {
                     for (char of characters) {
                         if (leagues.includes(char.league)) {
                             let words = "but it barely counts"
-                            if (char.league.includes("Hardcore")||char.league.includes("HC")) { words = "and he's metal AF" }
+                            if (char.league.includes("Hardcore") || char.league.includes("HC")) { words = "and he's metal AF" }
                             console.log(`${username}'s ${char.class},  ${char.name} made it to ${char.level} ${words}`)
                         }
                     }
