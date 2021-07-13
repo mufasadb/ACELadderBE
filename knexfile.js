@@ -11,9 +11,7 @@ module.exports = {
   production: {
     client: 'pg',
     connection: {
-      database: 'my_db',
-      user: 'username',
-      password: 'password'
+      database: 'postgress://localhost/aceladder'
     }
   }
 
