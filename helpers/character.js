@@ -17,10 +17,11 @@ async function getListOfCharacters() {
     for (user of users) {
 
         let currentChars = await Queries.getCharactersByUserID(user.id)
-        // console.log(currentChars);
+        console.log(currentChars);
         for (character of currentChars) {
             character.accountName = user.accountName
         }
+        characters.push(currentChars)
         console.log("returning DB chars")
 
     }
