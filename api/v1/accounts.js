@@ -43,7 +43,7 @@ async function updateMembers() {
             else {
                 console.log("trying to create account for")
                 // console.log(acc);
-                try { queries.createGeneric("accounts", acc).then(console.log(`created an account named ${acc.accountName}`)) } catch{ e => { console.log(e) } };
+                try { queries.createGeneric("accounts", acc).then(()=>{}) } catch{ e => { console.log(e) } };
             }
         }
         for (acc of accs[1]) {

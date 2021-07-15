@@ -15,11 +15,12 @@ function getUserData(user) {
 
 
 async function kickOffJobs() {
+    console.log("kicking off the Check Accounts Job")
     const users = await Queries.getAllGeneric("accounts")
     const listOfJobs = []
     for (let userIndex in users) {
 
-        setTimeout(() => { getUserData(users[userIndex]); console.log(users[userIndex].accountName) }, timeout / users.length / 2 * userIndex)
+        setTimeout(() => { getUserData(users[userIndex]);  }, timeout / users.length / 2 * userIndex)
     }
 }
 

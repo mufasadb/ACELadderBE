@@ -5,6 +5,7 @@ const users = require('./api/v1/characters')
 const cors = require('cors')
 const User = require("./api/v1/accounts");
 const RegularJob = require("./regularJob");
+const Admin = require("./api/v1/admin")
 
 RegularJob.start()
 
@@ -28,6 +29,7 @@ app.listen(port, () => {
     console.log(`App running on port ${port}.`)
 })
 
+app.use("/api/v1/admin", Admin);
 app.use('/api/v1/users', users);
 
 app.get("/accounts/", (request, response) => {
@@ -37,6 +39,8 @@ app.get("/accounts/", (request, response) => {
     })
 
 });
+
+app.use("/api/v1/accounts", Admin);
 
 app.use("/accounts/update", (req, res) => {
     console.log("tried to update accounts");

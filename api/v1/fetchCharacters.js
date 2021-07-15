@@ -11,7 +11,7 @@ for (user of users) {
 }
 
 function getCharactersByUser(username) {
-    console.log(username);
+    // console.log(username);
     req = https.request(
         {
             hostname: "www.pathofexile.com",

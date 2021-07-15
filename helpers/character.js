@@ -1,15 +1,18 @@
 const https = require("https");
 const User = require("../api/v1/accounts")
 const Queries = require("../db/queries")
-const minutesToReload = 5
-const League = require("./leagues")
+const Config = require("./config")
+const League = Config.leagueList
+const minutesToReload = Config.timeout
 
 
 let tooManyReturned = false
 
 
 
-async function getListOfCharacters() {
+async function getListOfCharacters(hc, ssf) {
+    console.log(`returning data where SSFOnly ${ssf} and HC only ${hc}`)
+
     let characters = []
     let users = await User.members()
 
@@ -17,51 +20,35 @@ async function getListOfCharacters() {
     for (user of users) {
 
         let currentChars = await Queries.getCharactersByUserID(user.id)
-        console.log(currentChars);
         for (character of currentChars) {
             character.accountName = user.accountName
+
+            if (character.league.includes("Hardcore" || character.league.includes("HC"))) {
+                character.hc = true
+            } else { character.hc = false }
         }
         characters.push(currentChars)
-        console.log("returning DB chars")
 
     }
-    characters = characters.flat();
-    console.log(characters)
-    return characters
-    // return await Promise.all(characters).then((res) => {
-    //     res = res.flat()
-    //     setTimeout(() => { tooManyReturned = false }, 3000)
-    //     console.log(res);
-    //     return res
-    // let sc = res.filter(obj => { return obj.hc === false })
-    // let hc = res.filter(obj => { return obj.hc === true })
-
-    // console.log(sc.length);
-    // console.log(hc.length);
-    // for (acc of res) {
-    //     sc = sc.concat(acc.sc)
-    //     hc = hc.concat(acc.hc)
-    // }
-
-    // sc.sort((a, b) => b.experience - a.experience);
-    // hc.sort((a, b) => b.experience - a.experience);
-    // if (hc.length > 0) {
-
-    //     for (let i = 0; i < hc.length; i++) {
-    //         hc[i].position = i + 1
-    //     }
-    // }
-    // if (sc.length > 0) {
-    //     for (let i = 0; i < sc.length; i++) {
-    //         sc[i].position = i + 1
-    //     }
-    // }
-
-
-
-    // return sc.concat(hc)
+    data = characters.flat()
+    if (hc) {
+        data = data.filter((c) => { return c.league.includes("Hardcore") || c.league.includes("HC") })
+    }
+    if (ssf) {
+        data = data.filter(c => { return c.league.includes("SSF") })
+    }
+    data = sortAndPosition(data)
+    return data
 }
 
+function sortAndPosition(characterList) {
+    characterList.sort((a, b) => b.experience - a.experience)
+    for (i in characterList) {
+        console.log("i")
+        characterList[i].position = i + 1;
+    }
+    return characterList
+}
 
 
 
@@ -72,7 +59,6 @@ async function getSpecificCharacter(id) {
     if (user.lastFetched < new Date(Date.now() - 1000 * 60 * minutesToReload)) {
         return getCharactersByUser(user, currentChars)
     } else {
-        console.log("returning DB chars")
         return currentChars
     }
 }
@@ -88,8 +74,6 @@ async function saveChars(userId, loadingChars, currentChars) {
     loadingChars.then((chars) => {
         let existedChars = 0;
         let brandSpankers = 0;
-        console.log("there is ")
-        console.log(chars.length)
         for (character of chars) {
             let submitable = {
                 name: character.name,
@@ -102,7 +86,7 @@ async function saveChars(userId, loadingChars, currentChars) {
                 ascendancy: character.class,
 
             }
-            console.log(character.name)
+            // console.log(character.name)
             let existingCharsSearch = currentChars.filter((obj) => { return obj.name === character.name })
             if (existingCharsSearch.length === 0) {
                 character.accountId = userId
@@ -185,13 +169,13 @@ function getUsersFromSite(username) {
             }
         })
     }
-    catch{ return  }
+    catch{ return }
 }
 
 
 
 
 module.exports = {
-    getListOfCharacters: () => { return getListOfCharacters() },
+    getListOfCharacters: (hc, ssf) => { return getListOfCharacters(hc, ssf) },
     getSpecificCharacter: (id) => { return getSpecificCharacter(id) }
 }

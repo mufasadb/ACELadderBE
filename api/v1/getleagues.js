@@ -14,12 +14,10 @@ const req2 = https.request(
 
             resp.on("data", d => {
                 chunks.push(d);
-                // console.log(chunks);
             });
 
             resp.on("end", () => {
                 const leagues = JSON.parse(chunks.join(""));
-                // console.log(leagues)
                 leagues.map(league => {
                     if (!originalLeagues.includes(league.id)) {
                         console.log(league.id)
@@ -34,4 +32,11 @@ const req2 = https.request(
     console.error(e);
 });
 
-req2.end()
+// req2.end()
+
+module.exports = {
+    leagueList = async function () {
+        await req2.end();
+        return currentLeagues
+    }
+}

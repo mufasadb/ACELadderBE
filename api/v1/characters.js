@@ -11,11 +11,22 @@ const CharacterHelp = require("../../helpers/character")
 
 
 router.get("/", (req, res) => {
-    CharacterHelp.getListOfCharacters().then((users) => {
+    let hc = true
+    let ssf = false
+    if (req.headers.hc === "false") {
+        hc = false
+    } if (req.headers.ssf === "true") { ssf = true }
+
+    CharacterHelp.getListOfCharacters(hc, ssf).then((users) => {
         res.json(users);
     });
 
 });
+router.get("/ladder", (req, res) => {
+    CharacterHelp.getLadderCharacters().then((users) => {
+        res.json(users)
+    })
+})
 
 router.get("/byUser/:id", (req, res) => {
     CharacterHelp.getSpecificCharacter(req.params.id).then(users => {
@@ -26,6 +37,5 @@ router.get("/byUser/:id", (req, res) => {
 
 
 
-// let leagueList = [ultimatum, ritual, deleeirum, gauntlet]
 
 module.exports = router;

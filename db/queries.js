@@ -6,7 +6,6 @@ module.exports = {
         return knex(objectType);
     },
     getOneGeneric(objectType, id) {
-        console.log(id);
         return knex(objectType).where("id", id).first();
     },
     createGeneric(objectType, object) {
