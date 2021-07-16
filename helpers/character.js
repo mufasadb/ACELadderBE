@@ -10,7 +10,7 @@ let tooManyReturned = false
 
 
 
-async function getListOfCharacters(hc, ssf) {
+async function getListOfCharacters(hc, ssf, top) {
     console.log(`returning data where SSFOnly ${ssf} and HC only ${hc}`)
 
     let characters = []
@@ -38,14 +38,18 @@ async function getListOfCharacters(hc, ssf) {
         data = data.filter(c => { return c.league.includes("SSF") })
     }
     data = sortAndPosition(data)
+    if (top) {
+        return (data.slice(0, top))
+    }
     return data
 }
 
 function sortAndPosition(characterList) {
     characterList.sort((a, b) => b.experience - a.experience)
     for (i in characterList) {
-        console.log("i")
-        characterList[i].position = i + 1;
+        let val = 1
+        val = val + parseInt(i)
+        characterList[i].position = val;
     }
     return characterList
 }
@@ -176,6 +180,6 @@ function getUsersFromSite(username) {
 
 
 module.exports = {
-    getListOfCharacters: (hc, ssf) => { return getListOfCharacters(hc, ssf) },
+    getListOfCharacters: (hc, ssf, top) => { return getListOfCharacters(hc, ssf, top) },
     getSpecificCharacter: (id) => { return getSpecificCharacter(id) }
 }

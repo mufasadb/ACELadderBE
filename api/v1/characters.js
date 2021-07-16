@@ -13,11 +13,12 @@ const CharacterHelp = require("../../helpers/character")
 router.get("/", (req, res) => {
     let hc = true
     let ssf = false
+    let top = parseInt(req.headers.top)
     if (req.headers.hc === "false") {
         hc = false
     } if (req.headers.ssf === "true") { ssf = true }
 
-    CharacterHelp.getListOfCharacters(hc, ssf).then((users) => {
+    CharacterHelp.getListOfCharacters(hc, ssf, top).then((users) => {
         res.json(users);
     });
 
