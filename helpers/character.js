@@ -5,7 +5,7 @@ const ConfigHelper = require("./config")
 const Config = ConfigHelper.config
 const League = Config.leagueList
 const minutesToReload = Config.timeout
-const levelCaps = require("./levelCaps");
+const levelCaps = require("./levelCaps.json");
 
 let tooManyReturned = false
 
@@ -56,7 +56,7 @@ async function getListOfCharacters(leagueList, top, classList) {
     }
     if (classList.length > 0) {
         classList = classList.split(",");
-        
+
         data = data.filter(obj => { return classList.includes(obj.ascendancy) })
     }
     data = sortAndPosition(data)
