@@ -10,7 +10,7 @@ const Config = require("../../helpers/config")
 
 
 
-router.get("/config", (req, res) => {
+router.get("/", (req, res) => {
     res.json(Config.config)
 });
 

@@ -1,17 +1,24 @@
 const https = require("https");
 const User = require("../api/v1/accounts")
 const Queries = require("../db/queries")
-const Config = require("./config")
+const ConfigHelper = require("./config")
+const Config = ConfigHelper.config
 const League = Config.leagueList
 const minutesToReload = Config.timeout
-
+const levelCaps = require("./levelCaps");
 
 let tooManyReturned = false
 
+for (level of levelCaps.list) {
+    level.xpToGain = level.xpToGain.replace(",", "").replace(",", "").replace(",", "")
+    level.totalXP = level.totalXP.replace(",", "").replace(",", "").replace(",", "")
+}
 
 
-async function getListOfCharacters(hc, ssf, top) {
-    console.log(`returning data where SSFOnly ${ssf} and HC only ${hc}`)
+
+
+
+async function getListOfCharacters(leagueList, top, classList) {
 
     let characters = []
     let users = await User.members()
@@ -31,16 +38,32 @@ async function getListOfCharacters(hc, ssf, top) {
 
     }
     data = characters.flat()
-    if (hc) {
-        data = data.filter((c) => { return c.league.includes("Hardcore") || c.league.includes("HC") })
+    if (leagueList.length === 0) {
+        data = data.filter(obj => { return (obj.league.includes("HC") || obj.league.includes("Hardcore")) })
+    } else {
+        leagueList = leagueList.split(",")
+        console.log(leagueList)
+        let newData = []
+        for (char of data) {
+            for (league of leagueList) {
+
+                if (league == char.league) {
+                    newData.push(char)
+                }
+            }
+        }
+        data = newData
     }
-    if (ssf) {
-        data = data.filter(c => { return c.league.includes("SSF") })
+    if (classList.length > 0) {
+        classList = classList.split(",");
+        
+        data = data.filter(obj => { return classList.includes(obj.ascendancy) })
     }
     data = sortAndPosition(data)
     if (top) {
         return (data.slice(0, top))
     }
+    console.log(data);
     return data
 }
 
@@ -50,6 +73,16 @@ function sortAndPosition(characterList) {
         let val = 1
         val = val + parseInt(i)
         characterList[i].position = val;
+        // console.log(characterList[i].level)
+        let thisLevelDeets = levelCaps.list.filter(obj => { return obj.level == characterList[i].level.toString() })
+        if (thisLevelDeets.length === 0) {
+            console.log(characterList[i])
+        } else {
+            characterList[i].xpThisLevel = thisLevelDeets[0].totalXP
+            // console.log(characterList[i].xpThisLevel)
+            characterList[i].xpToNext = thisLevelDeets[0].xpToGain
+        }
+
     }
     return characterList
 }
@@ -88,6 +121,7 @@ async function saveChars(userId, loadingChars, currentChars) {
                 league: character.league,
                 class: character.classId,
                 ascendancy: character.class,
+                isAlive: true
 
             }
             // console.log(character.name)
@@ -100,6 +134,15 @@ async function saveChars(userId, loadingChars, currentChars) {
             if (existingCharsSearch.length === 1) {
                 existedChars++
                 try { Queries.updateGeneric("characters", existingCharsSearch[0].id, submitable).then(d => { }) }
+                catch{ e => { throw e } }
+            }
+        }
+        for (oldCharacter of currentChars) {
+            let foundCharacters = chars.filter(obj => { return obj.name == oldCharacter.name })
+            if (foundCharacters == 0) {
+                //find the dead guy
+                oldCharacter.isAlive === false
+                try { Queries.updateGeneric("characters", oldCharacter.id, oldCharacter).then(d => { }) }
                 catch{ e => { throw e } }
             }
         }
@@ -147,7 +190,7 @@ function getUsersFromSite(username) {
                                 resp.on("end", () => {
                                     const characters = JSON.parse(chunks.join(""));
                                     for (char of characters) {
-                                        if (League.currentLeagues.includes(char.league)) {
+                                        if (League.includes(char.league)) {
                                             char.account = username
                                             if (char.league.includes("Hardcore") || char.league.includes("HC")) { char.hc = true }
                                             returnableChars.push(char)
@@ -180,6 +223,6 @@ function getUsersFromSite(username) {
 
 
 module.exports = {
-    getListOfCharacters: (hc, ssf, top) => { return getListOfCharacters(hc, ssf, top) },
+    getListOfCharacters: (leagueList, top, classList) => { return getListOfCharacters(leagueList, top, classList) },
     getSpecificCharacter: (id) => { return getSpecificCharacter(id) }
 }

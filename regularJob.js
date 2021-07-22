@@ -1,7 +1,7 @@
 const Queries = require("./db/queries")
 const CharacterHelp = require("./helpers/character")
 
-const minutes = 5
+const minutes = 3
 const timeout = 1000 * 60 * minutes
 
 
@@ -20,7 +20,7 @@ async function kickOffJobs() {
     const listOfJobs = []
     for (let userIndex in users) {
 
-        setTimeout(() => { getUserData(users[userIndex]);  }, timeout / users.length / 2 * userIndex)
+        setTimeout(() => { getUserData(users[userIndex]); }, timeout / (users.length + 1) * userIndex)
     }
 }
 
@@ -28,7 +28,7 @@ async function kickOffJobs() {
 // setTimeout(() => {
 //     kickOffJobs()
 // }, timeout)
-kickOffJobs()
+// kickOffJobs()
 function jobLoop() {
     setTimeout(() => {
         kickOffJobs()
@@ -37,6 +37,6 @@ function jobLoop() {
 }
 
 module.exports = {
-    start: () => { jobLoop() }
+    start: () => { kickOffJobs();jobLoop() }
 }
 

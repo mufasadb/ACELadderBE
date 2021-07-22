@@ -1,3 +1,5 @@
 characger byuser belongs in user
 need /character/id
  prbably
+
+ check alter if the characters updating to isAlive failing, is causing cpu usage that we can trim by not looping through dead characters.

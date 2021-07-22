@@ -6,8 +6,9 @@ const cors = require('cors')
 const User = require("./api/v1/accounts");
 const RegularJob = require("./regularJob");
 const Admin = require("./api/v1/admin")
+const Leagues = require("./api/v1/leagues")
 
-RegularJob.start()
+// RegularJob.start()
 
 
 
@@ -31,6 +32,7 @@ app.listen(port, () => {
 
 app.use("/api/v1/admin", Admin);
 app.use('/api/v1/users', users);
+app.use("/api/v1/leagues", Leagues);
 
 app.get("/accounts/", (request, response) => {
 

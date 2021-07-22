@@ -1,4 +1,6 @@
 let originalLeagues = ["Standard", "SSF Standard", "Hardcore", "SSF Hardcore"]
+const https = require("https");
+
 let currentLeagues = []
 const req2 = https.request(
     {
@@ -35,8 +37,9 @@ const req2 = https.request(
 // req2.end()
 
 module.exports = {
-    leagueList = async function () {
-        await req2.end();
+    leagueList: async () => {
+        req2.end();
+        console.log(currentLeagues)
         return currentLeagues
     }
 }
