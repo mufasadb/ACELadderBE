@@ -8,7 +8,7 @@ const RegularJob = require("./regularJob");
 const Admin = require("./api/v1/admin")
 const Leagues = require("./api/v1/leagues")
 
-// RegularJob.start()
+RegularJob.start()
 
 
 
