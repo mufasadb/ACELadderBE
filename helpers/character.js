@@ -39,7 +39,7 @@ async function getListOfCharacters(leagueList, top, classList) {
     }
     data = characters.flat()
     if (leagueList.length === 0) {
-        data = data.filter(obj => { return (obj.league.includes("HC") || obj.league.includes("Hardcore")) })
+        data = data.filter(obj => { return (obj.league.includes("SSF Expedition HC") || obj.league.includes("Hardcore Expedition")) })
     } else {
         leagueList = leagueList.split(",")
         console.log(leagueList)
