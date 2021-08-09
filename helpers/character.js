@@ -111,6 +111,8 @@ async function saveChars(userId, loadingChars, currentChars) {
     loadingChars.then((chars) => {
         let existedChars = 0;
         let brandSpankers = 0;
+
+        //chars here is all of the ones just pulled from live data
         for (character of chars) {
             let submitable = {
                 name: character.name,
@@ -139,9 +141,9 @@ async function saveChars(userId, loadingChars, currentChars) {
         }
         for (oldCharacter of currentChars) {
             let foundCharacters = chars.filter(obj => { return obj.name == oldCharacter.name })
+            //find the dead guy
             if (foundCharacters == 0) {
-                //find the dead guy
-                oldCharacter.isAlive === false
+                oldCharacter.isAlive = false
                 try { Queries.updateGeneric("characters", oldCharacter.id, oldCharacter).then(d => { }) }
                 catch{ e => { throw e } }
             }
